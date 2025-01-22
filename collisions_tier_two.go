@@ -41,12 +41,6 @@ func tierTwoCollisionsWithWorkerPool(atRiskPairs [][]SatPair, julianTimes []floa
 				}
 
 				minDistance, _ := distanceBetweenSatellites(satOne, satTwo, minTime)
-				// fmt.Println("pair", pair.ID1, pair.ID2, "minTime", minTime, "minDistance", minDistance)
-
-				if minDistance == 0 {
-					continue
-				}
-
 				minDistancePairs.addPair(pair.ID1, pair.ID2, minTime, minDistance)
 			}
 
@@ -72,39 +66,6 @@ func tierTwoCollisionsWithWorkerPool(atRiskPairs [][]SatPair, julianTimes []floa
 	return minDistancePairs
 }
 
-func processCollisionsTierTwo(atRiskPairs [][]SatPair, julianTimes []float64, spg4Satellites []Spg4Satellite) *MinDistancePairs {
-
-	minDistancePairs := NewMinDistancePairs()
-
-	for i, pairs := range atRiskPairs {
-
-		julianTime := julianTimes[i]
-		timeLeft := julianDateAddSeconds(julianTime, -10*60)
-		timeRight := julianDateAddSeconds(julianTime, 10*60)
-
-		for _, pair := range pairs {
-
-			minTime, err := binarySearch(spg4Satellites[pair.ID1], spg4Satellites[pair.ID2], timeLeft, timeRight)
-			if err != nil {
-				// fmt.Println("error propagating sat1", err)
-				continue
-			}
-
-			minDistance, _ := distanceBetweenSatellites(spg4Satellites[pair.ID1], spg4Satellites[pair.ID2], minTime)
-			// fmt.Println("pair", pair.ID1, pair.ID2, "minTime", minTime, "minDistance", minDistance)
-
-			if minDistance == 0 {
-				continue
-			}
-
-			minDistancePairs.addPair(pair.ID1, pair.ID2, minTime, minDistance)
-
-		}
-	}
-
-	return minDistancePairs
-}
-
 func binarySearch(sat1, sat2 Spg4Satellite, timeLeft, timeRight float64) (atTime float64, err error) {
 
 	timeMid := (timeLeft + timeRight) / 2.0
@@ -125,14 +86,11 @@ func binarySearch(sat1, sat2 Spg4Satellite, timeLeft, timeRight float64) (atTime
 		return 0, err
 	}
 
-	// fmt.Println("distanceLeftDelta", timeMid, distanceMid)
-
 	if distanceLeftDelta < distanceMid {
 		return binarySearch(sat1, sat2, timeLeft, timeMid)
 	} else {
 		return binarySearch(sat1, sat2, timeMid, timeRight)
 	}
-
 }
 
 func distanceBetweenSatellites(sat1, sat2 Spg4Satellite, atTime float64) (float64, error) {
@@ -156,7 +114,6 @@ func distanceBetweenPositions(sat1Pos, sat2Pos SatPosition) float64 {
 
 type MinDistancePairs struct {
 	pairs sync.Map
-	// map[SatPair]MinDistancePoint
 }
 
 type MinDistancePoint struct {
