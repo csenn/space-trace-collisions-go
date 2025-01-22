@@ -7,12 +7,7 @@ import (
 	"sync"
 )
 
-// type Task struct {
-// 	SatPair    SatPair
-// 	JulianTime float64
-// }
-
-func processCollisionTwoWithWorkerPool(atRiskPairs [][]SatPair, julianTimes []float64, spg4Satellites []Spg4Satellite) MinDistancePairs {
+func tierTwoCollisionsWithWorkerPool(atRiskPairs [][]SatPair, julianTimes []float64, spg4Satellites []Spg4Satellite) *MinDistancePairs {
 
 	// Number of worker goroutines
 	numWorkers := runtime.NumCPU()
@@ -65,14 +60,8 @@ func processCollisionTwoWithWorkerPool(atRiskPairs [][]SatPair, julianTimes []fl
 		go worker()
 	}
 
-	for i, _ := range atRiskPairs {
+	for i := range atRiskPairs {
 		tasks <- i
-		// for _, pair := range pairs {
-		// 	tasks <- Task{
-		// 		SatPair:    pair,
-		// 		JulianTime: julianTimes[i],
-		// 	}
-		// }
 	}
 
 	close(tasks) // Close the channel to signal workers no more tasks
@@ -83,7 +72,7 @@ func processCollisionTwoWithWorkerPool(atRiskPairs [][]SatPair, julianTimes []fl
 	return minDistancePairs
 }
 
-func processCollisionsTierTwo(atRiskPairs [][]SatPair, julianTimes []float64, spg4Satellites []Spg4Satellite) MinDistancePairs {
+func processCollisionsTierTwo(atRiskPairs [][]SatPair, julianTimes []float64, spg4Satellites []Spg4Satellite) *MinDistancePairs {
 
 	minDistancePairs := NewMinDistancePairs()
 
@@ -175,8 +164,8 @@ type MinDistancePoint struct {
 	Distance   float64
 }
 
-func NewMinDistancePairs() MinDistancePairs {
-	return MinDistancePairs{
+func NewMinDistancePairs() *MinDistancePairs {
+	return &MinDistancePairs{
 		pairs: sync.Map{},
 	}
 }

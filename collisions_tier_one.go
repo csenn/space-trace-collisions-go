@@ -31,7 +31,7 @@ func buildSatLocations(satellitesData []Spg4Satellite, times []float64) [][]SatP
 	return satLocations
 }
 
-func processTimesWithWorkerPool(numTimes int, numSatellites int, satLocations [][]SatPosition) [][]SatPair {
+func tierOneCollisionsWithWorkerPool(numTimes int, numSatellites int, satLocations [][]SatPosition) [][]SatPair {
 
 	numWorkers := runtime.NumCPU() // Number of worker goroutines
 	tasks := make(chan int, numTimes)

@@ -129,8 +129,6 @@ func (t *TimeCluster) getAllSatIdsInNeighborCluster(clusterKey ClusterKey) []int
 
 func (t *TimeCluster) findDimPairs(satCoords []SatCoord) map[SatPair]struct{} {
 
-	// fmt.Println(satCoords)
-
 	// First sort the coords
 	sort.Slice(satCoords, func(i, j int) bool {
 		return satCoords[i].Dim < satCoords[j].Dim
